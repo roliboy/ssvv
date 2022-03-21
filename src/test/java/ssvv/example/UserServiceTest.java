@@ -1,8 +1,8 @@
 package ssvv.example;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import ssvv.example.domain.Nota;
 import ssvv.example.domain.Student;
@@ -19,7 +19,7 @@ import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertThrows;
 
 public class UserServiceTest {
     Service service;
@@ -38,7 +38,7 @@ public class UserServiceTest {
     NotaValidator notaValidator;
 
 
-    @BeforeEach
+    @Before
     public void setup() throws IOException {
         studentRepositoryFile = File.createTempFile("student_repository", ".txt");
 
@@ -48,7 +48,7 @@ public class UserServiceTest {
         service = new Service(studentRepository, studentValidator, temaRepository, temaValidator, notaRepository, notaValidator);
     }
 
-    @AfterEach
+    @After
     public void teardown() {
         studentRepositoryFile.delete();
     }
