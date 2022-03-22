@@ -28,10 +28,10 @@ public class UserServiceTest {
     StudentValidator studentValidator;
     File studentRepositoryFile;
 
-    @Mock
     CrudRepository<String, Tema> temaRepository;
-    @Mock
     TemaValidator temaValidator;
+    File temaRepositoryFile;
+
     @Mock
     CrudRepository<String, Nota> notaRepository;
     @Mock
@@ -41,9 +41,13 @@ public class UserServiceTest {
     @Before
     public void setup() throws IOException {
         studentRepositoryFile = File.createTempFile("student_repository", ".txt");
+        temaRepositoryFile = File.createTempFile("tema_repository", ".txt");
 
         studentRepository = new StudentFileRepository(studentRepositoryFile.getAbsolutePath());
         studentValidator = new StudentValidator();
+
+        temaRepository = new TemaFileRepository(temaRepositoryFile.getAbsolutePath());
+        temaValidator = new TemaValidator();
 
         service = new Service(studentRepository, studentValidator, temaRepository, temaValidator, notaRepository, notaValidator);
     }
@@ -129,5 +133,23 @@ public class UserServiceTest {
         Student student = new Student("id_one", "Name one", 420, "");
 
         assertThrows(ValidationException.class, () -> service.addStudent(student));
+    }
+
+
+
+    @Test
+    public void addTema_withValidProperties_temaIsAdded() {
+        Tema tema = new Tema("1", "cea mai faina tema", 4, 2);
+
+        service.addTema(tema);
+
+        assertThat(service.getAllTeme(), containsInAnyOrder(tema));
+    }
+
+    @Test
+    public void addTema_withInvalidId_exceptionIsThrown() {
+        Tema tema = new Tema("", "cea mai faina tema", 4, 2);
+
+        assertThrows(ValidationException.class, () -> service.addTema(tema));
     }
 }
