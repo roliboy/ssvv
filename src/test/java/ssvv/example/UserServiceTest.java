@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertThrows;
 
 public class UserServiceTest {
@@ -37,7 +38,6 @@ public class UserServiceTest {
     @Mock
     NotaValidator notaValidator;
 
-
     @Before
     public void setup() throws IOException {
         studentRepositoryFile = File.createTempFile("student_repository", ".txt");
@@ -55,6 +55,7 @@ public class UserServiceTest {
     @After
     public void teardown() {
         studentRepositoryFile.delete();
+        temaRepositoryFile.delete();
     }
 
     @Test
@@ -138,18 +139,48 @@ public class UserServiceTest {
 
 
     @Test
-    public void addTema_withValidProperties_temaIsAdded() {
-        Tema tema = new Tema("1", "cea mai faina tema", 4, 2);
+    public void addAssignment_withEmptyId_throwsValidationException() {
+        Tema assignment = new Tema("", "description", 3, 2);
 
-        service.addTema(tema);
-
-        assertThat(service.getAllTeme(), containsInAnyOrder(tema));
+        assertThrows(ValidationException.class, () -> service.addTema(assignment));
     }
 
     @Test
-    public void addTema_withInvalidId_exceptionIsThrown() {
-        Tema tema = new Tema("", "cea mai faina tema", 4, 2);
+    public void addAssignment_withDeliveryWeekAfterDeadline_throwsValidationException() {
+        Tema assignment = new Tema("1", "description", 1, 8);
 
-        assertThrows(ValidationException.class, () -> service.addTema(tema));
+        assertThrows(ValidationException.class, () -> service.addTema(assignment));
+    }
+
+    @Test
+    public void addAssignment_withEmptyDescription_throwsValidationException() {
+        Tema assignment = new Tema("1", "", 3, 2);
+
+        assertThrows(ValidationException.class, () -> service.addTema(assignment));
+    }
+
+    @Test
+    public void addAssignment_withNegativeDeadline_throwsValidationException() {
+        Tema assignment = new Tema("1", "description", -1, 2);
+
+        assertThrows(ValidationException.class, () -> service.addTema(assignment));
+    }
+
+    @Test
+    public void addAssignment_withNegativeDeliveryWeek_throwsValidationException() {
+        Tema assignment = new Tema("1", "description", 1, -1);
+
+        assertThrows(ValidationException.class, () -> service.addTema(assignment));
+    }
+
+    @Test
+    public void addAssignment_withDuplicateId_existingAssignmentIsUsed() {
+        Tema firstAssignment = new Tema("1", "description 1", 3, 2);
+        Tema secondAssignment = new Tema("1", "description 2", 4, 3);
+
+        service.addTema(firstAssignment);
+        service.addTema(secondAssignment);
+
+        assertThat(service.getAllTeme(), hasItems(firstAssignment));
     }
 }
