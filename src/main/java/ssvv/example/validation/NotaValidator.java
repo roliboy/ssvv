@@ -7,15 +7,16 @@ import ssvv.example.domain.Tema;
 import ssvv.example.repository.*;
 
 public class NotaValidator implements Validator<Nota> {
-    private StudentXMLRepo studentFileRepository;
-    private TemaXMLRepo temaFileRepository;
+    private CrudRepository<String, Student> studentFileRepository;
+    private CrudRepository<String, Tema> temaFileRepository;
 
     /**
      * Class constructor
      * @param studentFileRepository - repository student
      * @param temaFileRepository - repository tema
      */
-    public NotaValidator(StudentXMLRepo studentFileRepository, TemaXMLRepo temaFileRepository) {
+    public NotaValidator(CrudRepository<String, Student> studentFileRepository,
+                         CrudRepository<String, Tema> temaFileRepository) {
         this.studentFileRepository = studentFileRepository;
         this.temaFileRepository = temaFileRepository;
     }
